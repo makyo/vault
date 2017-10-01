@@ -11,10 +11,23 @@ import (
 	"github.com/adjspecies/vault/api"
 )
 
-func NewServer() (http.Handler, error) {
+type Server struct {
+	r *mux.Router
+}
+
+func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	s.r.ServeHTTP(w, r)
+}
+
+func (s Server) Close() error {
+	return nil
+}
+
+func NewServer() (Server, error) {
 	r := mux.NewRouter()
 	if err := api.Register(r); err != nil {
-		return nil, err
+		return Server{}, err
 	}
-	return r, nil
+	s := Server{r: r}
+	return s, nil
 }
