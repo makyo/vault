@@ -17,9 +17,9 @@ import (
 // options.
 func New(options *Options) (*DB, error) {
 	db := &DB{
-		options: options,
+		Options: options,
 	}
-	connStr, err := db.options.ConnectionString()
+	connStr, err := db.Options.ConnectionString()
 	if err != nil {
 		return nil, errgo.Mask(err)
 	}
@@ -27,7 +27,7 @@ func New(options *Options) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.conn = conn
+	db.Conn = conn
 	return db, nil
 }
 
@@ -104,37 +104,4 @@ func (o *Options) ConnectionString() (string, error) {
 		opts = append(opts, fmt.Sprintf("sslrootcert=%s", escape(o.SSLRootCert)))
 	}
 	return strings.Join(opts, " "), nil
-}
-
-// DataReader describes an object which can read data from the database.
-type DataReader interface {
-	// Args: slug
-	// Returns: model, error
-	Source(string, *Source) error
-	Survey(string, *Survey) error
-	// Args: survey slug, id
-	// Returns: model, error
-	Response(string, *Response) error
-	Respondent(string, *Respondent) error
-	// Args: query, order, group, limit, an interface to hold the expected data.
-	// Returns: error
-	Select(string, string, string, int, *interface{}) error
-}
-
-// DataWriter describes an object which can write data to the database.
-type DataWriter interface {
-	WriteSource(Source) error
-	WriteSurvey(Survey) error
-	WriteSummary(Summary) error
-	WriteResponse(Response) error
-	WriteRespondent(Respondent) error
-	Insert(string) error
-	Update(string) error
-	Delete(string) error
-}
-
-// DB holds connection information and allows querying of the database
-type DB struct {
-	conn    *sql.DB
-	options *Options
 }
