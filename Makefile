@@ -15,6 +15,7 @@ check-license:
 
 .PHONY: deps
 deps:
+	go get launchpad.net/godeps
 	godeps -u dependencies.tsv
 
 .PHONY: create-deps
